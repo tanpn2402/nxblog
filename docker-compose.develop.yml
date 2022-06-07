@@ -1,0 +1,124 @@
+version: '3'
+
+services:
+
+  # nginx
+  nxblog.nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    image: nxblog.nginx
+    container_name: nxblog.nginx
+    restart: unless-stopped
+    networks:
+      - internal
+    depends_on:
+      - nxblog.nx
+      - nxblog.strapi
+      - nxblog.pgadmin
+    links:
+      - "nxblog.nx:nxblog.nx"
+      - "nxblog.strapi:nxblog.strapi"
+      - "nxblog.pgadmin:nxblog.pgadmin"
+    ports:
+      - ${NGINX_PORT}:3666
+
+  # strapi
+  nxblog.strapi:
+    build:
+      context: ./strapi
+      dockerfile: Dockerfile
+    image: nxblog.strapi
+    container_name: nxblog.strapi
+    restart: unless-stopped
+    ports:
+      - ${STRAPI_PORT}:1337
+    volumes:
+      - ./strapi/.cache:/app/.cache
+      - ./strapi/build:/app/build
+      - ./strapi/config:/app/config
+      - ./strapi/database:/app/database
+      - ./strapi/public:/app/public
+      - ./strapi/src:/app/src
+      - ./strapi/.editorconfig:/app/.editorconfig
+      - ./strapi/.env:/app/.env
+      - ./strapi/.eslintignore:/app/.eslintignore
+      - ./strapi/.eslintrc:/app/.eslintrc
+      - ./strapi/.strapi-updater.json:/app/.strapi-updater.json
+      - ./strapi/favicon.ico:/app/favicon.ico
+    depends_on:
+      - nxblog.postgres
+    networks:
+      - internal
+    links:
+      - "nxblog.postgres:nxblog.postgres"
+
+  # nextjs
+  nxblog.nx:
+    build:
+      context: ./nextjs
+      dockerfile: Dockerfile
+    image: nxblog.nx
+    container_name: nxblog.nx
+    restart: unless-stopped
+    ports:
+      - ${NEXTJS_PORT}:3000
+    volumes:
+      # - ./nextjs/.next:/app/.next
+      # - ./nextjs/@types:/app/@types
+      - ./nextjs/components:/app/components
+      - ./nextjs/lib:/app/lib
+      - ./nextjs/pages:/app/pages
+      - ./nextjs/public:/app/public
+      - ./nextjs/services:/app/services
+      - ./nextjs/styles:/app/styles
+      - ./nextjs/.env.local:/app/.env.local
+      - ./nextjs/next-env.d.ts:/app/next-env.d.ts
+      - ./nextjs/next.config.js:/app/next.config.js
+      - ./nextjs/postcss.config.js:/app/postcss.config.js
+      - ./nextjs/tailwind.config.js:/app/tailwind.config.js
+      - ./nextjs/tsconfig.json:/app/tsconfig.json
+    depends_on:
+      - nxblog.strapi
+    networks:
+      - internal
+    links:
+      - "nxblog.strapi:nxblog.strapi"
+
+  # postgres
+  nxblog.postgres:
+    image: postgres
+    container_name: nxblog.postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./postgres/data:/var/lib/postgresql/data
+      # copy the sql script to create tables
+      - ./postgres/init/dbinit.sql:/docker-entrypoint-initdb.d/dbinit.sql
+    networks:
+      - internal
+    restart: unless-stopped
+
+  # postgres admin
+  nxblog.pgadmin:
+    container_name: nxblog.pgadmin
+    image: dpage/pgadmin4
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    volumes:
+      - ./postgres/pgadmin:/var/lib/pgadmin
+    ports:
+      - ${PGADMIN_PORT}:80
+    networks:
+      - internal
+    depends_on:
+      - nxblog.postgres
+    links:
+      - "nxblog.postgres:nxblog.postgres"
+
+networks:
+  internal:

@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  strost.bootstrap.server:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: strost.bootstrap.server
+    container_name: strost.bootstrap.server
+    restart: unless-stopped
+    network_mode: host
