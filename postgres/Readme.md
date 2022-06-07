@@ -1,5 +1,6 @@
 ## NOTICE before run must run this cmd
 ```
+mkdir ./pgadmin
 sudo chmod -R 777 ./pgadmin
 ```
 ## restore postgres db
