@@ -18,7 +18,9 @@ services:
       - nxblog.pgadmin
     links:
       - "nxblog.nx:nxblog.nx"
+      - "nxblog.nx.replica1:nxblog.nx.replica1"
       - "nxblog.strapi:nxblog.strapi"
+      - "nxblog.strapi.replica1:nxblog.strapi.replica1"
       - "nxblog.pgadmin:nxblog.pgadmin"
     ports:
       - ${NGINX_PORT}:3666
@@ -63,8 +65,37 @@ services:
     image: nxblog.nx
     container_name: nxblog.nx
     restart: unless-stopped
-    ports:
-      - ${NEXTJS_PORT}:3000
+    # ports:
+    #   - ${NEXTJS_PORT}:3000
+    volumes:
+      # - ./nextjs/.next:/app/.next
+      # - ./nextjs/@types:/app/@types
+      - ./nextjs/components:/app/components
+      - ./nextjs/lib:/app/lib
+      - ./nextjs/pages:/app/pages
+      - ./nextjs/public:/app/public
+      - ./nextjs/services:/app/services
+      - ./nextjs/styles:/app/styles
+      - ./nextjs/.env.local:/app/.env.local
+      - ./nextjs/next-env.d.ts:/app/next-env.d.ts
+      - ./nextjs/next.config.js:/app/next.config.js
+      - ./nextjs/postcss.config.js:/app/postcss.config.js
+      - ./nextjs/tailwind.config.js:/app/tailwind.config.js
+      - ./nextjs/tsconfig.json:/app/tsconfig.json
+    depends_on:
+      - nxblog.strapi
+    networks:
+      - internal
+    links:
+      - "nxblog.strapi:nxblog.strapi"
+
+  nxblog.nx.replica1:
+    build:
+      context: ./nextjs
+      dockerfile: Dockerfile
+    image: nxblog.nx
+    container_name: nxblog.nx.replica1
+    restart: unless-stopped
     volumes:
       # - ./nextjs/.next:/app/.next
       # - ./nextjs/@types:/app/@types
