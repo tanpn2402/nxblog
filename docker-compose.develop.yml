@@ -20,7 +20,7 @@ services:
       - "nxblog.nx:nxblog.nx"
       - "nxblog.nx.replica1:nxblog.nx.replica1"
       - "nxblog.strapi:nxblog.strapi"
-      - "nxblog.strapi.replica1:nxblog.strapi.replica1"
+      # - "nxblog.strapi.replica1:nxblog.strapi.replica1"
       - "nxblog.pgadmin:nxblog.pgadmin"
     ports:
       - ${NGINX_PORT}:3666
