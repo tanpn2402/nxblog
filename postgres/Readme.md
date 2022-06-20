@@ -10,10 +10,10 @@ cat db.sql | docker exec -i postgres.strost psql -U strost -d strost
 docker exec -t postgres.strost pg_dump -U strost -d strost  > "db.sql"
 
 ## folder structure
-./postgres
-    ├── backup
-    ├── data                      # created by docker
-    ├── init                      # init db sql
-    ├── pgadmin                   # created by user with permission = 0777
-    ├── db_backup.sh              
-    └── README.md
+    ./postgres
+        ├── backup
+        ├── data                      # created by docker
+        ├── init                      # init db sql
+        ├── pgadmin                   # created by user with permission = 0777
+        ├── db_backup.sh              
+        └── README.md

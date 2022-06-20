@@ -201,6 +201,7 @@ services:
     volumes:
       - ./telegraf/telegraf:/app/telegraf
       - ./telegraf/telegraf.conf:/app/telegraf.conf
+      - ./telegraf/telegraf.d:/app/telegraf.d
       # for mornitoring docker (https://github.com/influxdata/telegraf/blob/master/plugins/inputs/docker/README.md)
       - /var/run/docker.sock:/var/run/docker.sock
       # for mornitoring nginx
