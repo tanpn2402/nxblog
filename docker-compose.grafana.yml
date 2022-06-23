@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+
+  # influxdb: time series database
+  tx.influxdb:
+    image: influxdb:1.8
+    container_name: tx.influxdb
+    restart: unless-stopped
+    ports:
+      - ${INFLUXDB_PORT}:8086
+    networks:
+      - internal
+    volumes:
+      - ./influxdb/data:/var/lib/influxdb
+    environment:
+      - INFLUXDB_DB=${INFLUXDB_DB}
+      - INFLUXDB_USER=${INFLUXDB_USER}
+      - INFLUXDB_USER_PASSWORD=${INFLUXDB_USER_PASSWORD}
+      - INFLUXDB_ADMIN_ENABLED=${INFLUXDB_ADMIN_ENABLED}
+      - INFLUXDB_ADMIN_USER=${INFLUXDB_ADMIN_USER} 
+      - INFLUXDB_ADMIN_PASSWORD=${INFLUXDB_ADMIN_PASSWORD} 
+
+  # grafana
+  tx.grafana:
+    image: grafana/grafana-enterprise
+    container_name: tx.grafana
+    restart: unless-stopped
+    ports:
+      - ${GRAFANA_PORT}:3000
+    networks:
+      - internal
+    volumes:
+      - ./grafana/data:/var/lib/grafana
+    depends_on:
+      - tx.influxdb
+    links:
+      - tx.influxdb
+
+networks:
+  internal:

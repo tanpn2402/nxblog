@@ -12,6 +12,8 @@ sudo mkdir -m 777 ./data
 3. https://grafana.com/grafana/dashboards/15814-docker-host
 4. Linux System Overview: https://grafana.com/grafana/dashboards/2381, https://grafana.com/grafana/dashboards/1375
 5. Top processes: https://grafana.com/grafana/dashboards/3387
+6. SNMP: https://grafana.com/grafana/dashboards/12366
+7. JVM with Jolokia: https://grafana.com/grafana/dashboards/8991
 
 ## `folder structure`
     ./grafana
